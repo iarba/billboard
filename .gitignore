@@ -7,3 +7,5 @@
 # ignore log files
 *.l
 *.log
+# node modules
+node_modules/
