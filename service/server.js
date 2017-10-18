@@ -14,7 +14,7 @@ function fetchPost(req, res, next){
   try{
     let authNo = Number(body.auth);
     let realm = util.withinReason(req.params.realm);
-    if(!auth.allowed({action: 1, realm: req.params.realm}, authNo)){
+    if(!auth.allowed({action: 1, realm: realm}, authNo)){
       res.status(403).send("Action not authorised");
     }
     db.tables.post.findAll()
@@ -30,7 +30,7 @@ function makePost(req, res, next){
   try{
     let authNo = Number(body.auth);
     let realm = util.withinReason(req.params.realm);
-    if(!auth.allowed({action: 2, realm: req.params.realm}, authNo)){
+    if(!auth.allowed({action: 2, realm: realm}, authNo)){
       res.status(403).send("Action not authorised");
     }
     let request = util.withinReason(body.request);
@@ -59,7 +59,7 @@ function updatePost(req, res, next){
     let id = Number(body.id);
     let authNo = Number(body.auth);
     let realm = util.withinReason(req.params.realm);
-    if(!auth.allowed({action: 3, realm: req.params.realm, id: id}, authNo)){
+    if(!auth.allowed({action: 3, realm: realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
     }
     let request = util.withinReason(body.request);
@@ -91,7 +91,7 @@ function purgePost(req, res, next){
     let id = Number(body.id);
     let authNo = Number(body.auth);
     let realm = util.withinReason(req.params.realm);
-    if(!auth.allowed({action: 4, realm: req.params.realm, id: id}, authNo)){
+    if(!auth.allowed({action: 4, realm: realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
     }
     db.tables.post.destroy({where: {id: id, realm: realm}});
