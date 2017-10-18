@@ -1,10 +1,14 @@
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
 const db = require('./database');
 const auth = require('./authentification');
 const util = require('./util');
+const WebSocket = require('ws');
 
-const port = 
+const port = process.env.PORT || 3000;
+let server;
+let wss;
 
 function fetchPost(req, res, next){
   try{
@@ -36,7 +40,8 @@ function makePost(req, res, next){
       db.tables.post.create({
         request: request, 
         reward: reward, 
-        contact: contact
+        contact: contact,
+        realm: realm
       })
       .then((data) => {
         res.status(200).send(util.sanitize(data));
@@ -60,16 +65,19 @@ function updatePost(req, res, next){
     let request = util.withinReason(body.request);
     let reward = util.withinReason(body.reward);
     let contact = util.withinReason(body.contact);
-    if(request){
-      entry.request = request;
-    };
-    if(reward){
-      entry.reward = reward;
-    };
-    if(contact){
-      entry.contact = contact;
-    };
-    entry.save()
+    db.tables.post.findOne({where: {id: id, realm: realm}})
+    .then((entry) => {
+      if(request){
+        entry.request = request;
+      };
+      if(reward){
+        entry.reward = reward;
+      };
+      if(contact){
+        entry.contact = contact;
+      };
+      return entry.save();
+    })
     .then((data) => {
       res.status(200).send(util.sanitize(data));
     });
@@ -86,7 +94,7 @@ function purgePost(req, res, next){
     if(!auth.allowed({action: 4, realm: req.params.realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
     }
-    entry.destroy()
+    db.tables.post.destroy({where: {id: id, realm: realm}});
     .then(() => {
       res.status(200).send("Clean kill");
     });
@@ -97,13 +105,17 @@ function purgePost(req, res, next){
 
 function init(){
   return new Promise((resolve, reject) => {
-    const server = express();
+    server = express();
     server.use(cors());
     server.use(bodyParser.json());
     server.get('/:realm/post', fetchPost);
     server.post('/:realm/post', makePost);
     server.put('/:realm/post', updatePost);
     server.delete('/:realm/post', purgePost);
+    wss = new WebSocket.Server({server: server});
+    wss.on('connection', (ws, req) => {
+      auth.serve(ws, req);
+    });
     server.listen(port, () => {
       console.log('server listening on port ' + port);
       resolve();
