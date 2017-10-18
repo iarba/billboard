@@ -1,0 +1,9 @@
+# ignore hidden files
+.*
+# except gitignore itself
+!.gitignore
+# ignore backup files
+*~
+# ignore log files
+*.l
+*.log
