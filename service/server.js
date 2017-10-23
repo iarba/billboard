@@ -4,6 +4,7 @@ const http = require('http');
 const db = require('./database');
 const auth = require('./authentification');
 const util = require('./util');
+const logger = require('morgan');
 const bodyParser = require('body-parser');
 const authHeader = 'auth';
 
@@ -107,6 +108,7 @@ function purgePost(req, res, next){
 function init(){
   return new Promise((resolve, reject) => {
     server = express();
+    server.use(logger('dev'));
     server.use(cors());
     server.use(bodyParser.json());
     server.get('/:realm/post', fetchPost);
