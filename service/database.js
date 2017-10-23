@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize')
 
-const dbName = '';
-const dbUser = '';
-const dbPass = '';
-const dbHost = '';
-const dbType = '';
+const dbName = process.env.DBNAME;
+const dbUser = process.env.DBUSER;
+const dbPass = process.env.DBPASS;
+const dbHost = process.env.DBHOST;
+const dbType = process.env.DBTYPE;
 
 let sequelize = new Sequelize(dbName, dbUser, dbPass, {
   host: dbHost,
@@ -14,10 +14,12 @@ let sequelize = new Sequelize(dbName, dbUser, dbPass, {
 });
 
 let post = sequelize.define('information', {
-  request: {type: Sequelize.STRING}
-  reward: {type: Sequelize.STRING}
-  contact: {type: Sequelize.STRING}
+  request: {type: Sequelize.STRING},
+  reward: {type: Sequelize.STRING},
+  contact: {type: Sequelize.STRING},
   realm: {type: Sequelize.STRING}     
+},{
+  timestamps:false
 });
 
 const tables = { post: post };

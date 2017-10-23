@@ -94,7 +94,7 @@ function purgePost(req, res, next){
     if(!auth.allowed({action: 4, realm: realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
     }
-    db.tables.post.destroy({where: {id: id, realm: realm}});
+    db.tables.post.destroy({where: {id: id, realm: realm}})
     .then(() => {
       res.status(200).send("Clean kill");
     });
