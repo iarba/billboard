@@ -8,9 +8,6 @@ start = () => {
       return server.init();
     })
     .then(() => {
-      return server.start();
-    })
-    .then(() => {
       console.log('Initialisation successful');
     })
   } catch (e) {
