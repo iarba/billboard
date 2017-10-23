@@ -4,6 +4,7 @@ const http = require('http');
 const db = require('./database');
 const auth = require('./authentification');
 const util = require('./util');
+const bodyParser = require('body-parser');
 const WebSocket = require('ws');
 
 const port = process.env.PORT || 3000;
