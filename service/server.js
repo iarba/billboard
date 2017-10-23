@@ -118,9 +118,9 @@ function init(){
     });
     server.listen(port, () => {
       console.log('server listening on port ' + port);
-      resolve();
+      resolve(server);
     });
   });
 }
 
-
+module.exports.init = init;
