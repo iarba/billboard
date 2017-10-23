@@ -5,7 +5,7 @@ const db = require('./database');
 const auth = require('./authentification');
 const util = require('./util');
 const bodyParser = require('body-parser');
-const WebSocket = require('ws');
+const authHeader = 'auth';
 
 const port = process.env.PORT || 3000;
 let server;
@@ -13,7 +13,7 @@ let wss;
 
 function fetchPost(req, res, next){
   try{
-    let authNo = Number(body.auth);
+    let authNo = req.get(authHeader);
     let realm = util.withinReason(req.params.realm);
     if(!auth.allowed({action: 1, realm: realm}, authNo)){
       res.status(403).send("Action not authorised");
@@ -29,7 +29,7 @@ function fetchPost(req, res, next){
 
 function makePost(req, res, next){
   try{
-    let authNo = Number(body.auth);
+    let authNo = req.get(authHeader);
     let realm = util.withinReason(req.params.realm);
     if(!auth.allowed({action: 2, realm: realm}, authNo)){
       res.status(403).send("Action not authorised");
@@ -58,7 +58,7 @@ function makePost(req, res, next){
 function updatePost(req, res, next){
   try{
     let id = Number(body.id);
-    let authNo = Number(body.auth);
+    let authNo = req.get(authHeader);
     let realm = util.withinReason(req.params.realm);
     if(!auth.allowed({action: 3, realm: realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
@@ -90,7 +90,7 @@ function updatePost(req, res, next){
 function purgePost(req, res, next){
   try{
     let id = Number(body.id);
-    let authNo = Number(body.auth);
+    let authNo = req.get(authHeader);
     let realm = util.withinReason(req.params.realm);
     if(!auth.allowed({action: 4, realm: realm, id: id}, authNo)){
       res.status(403).send("Action not authorised");
@@ -113,10 +113,6 @@ function init(){
     server.post('/:realm/post', makePost);
     server.put('/:realm/post', updatePost);
     server.delete('/:realm/post', purgePost);
-    wss = new WebSocket.Server({server: server});
-    wss.on('connection', (ws, req) => {
-      auth.serve(ws, req);
-    });
     server.listen(port, () => {
       console.log('server listening on port ' + port);
       resolve(server);
