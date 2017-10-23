@@ -27,7 +27,7 @@ const tables = { post: post };
 function init(){
   return sequelize.authenticate()
   .then(() => {
-    sequelize.sync();
+    return sequelize.sync();
   })
   .then(() => {
     console.log('database init success');
